@@ -214,6 +214,24 @@ const CoverArtManagement = () => {
   };
 
   const handleContinue = () => {
+    // Save selected cover art to localStorage so processing page can access it
+    if (selectedImage) {
+      // Save as base64 data URL for embedding
+      localStorage.setItem('coverArtImage', selectedImage.url);
+      // Also save metadata for reference
+      localStorage.setItem('selectedCoverArt', JSON.stringify({
+        url: selectedImage.url,
+        name: selectedImage.name,
+        type: selectedImage.type,
+        size: selectedImage.size
+      }));
+      console.log('✅ Saved cover art to localStorage:', selectedImage.name);
+    } else {
+      // Clear any previously saved cover art
+      localStorage.removeItem('coverArtImage');
+      localStorage.removeItem('selectedCoverArt');
+      console.log('ℹ️ No cover art selected, cleared localStorage');
+    }
     navigate('/file-processing');
   };
 
