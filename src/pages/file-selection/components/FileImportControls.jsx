@@ -373,7 +373,7 @@ const FileImportControls = ({
           <div className="flex items-center space-x-2 text-info">
             <div className="animate-spin w-4 h-4 border-2 border-info border-t-transparent rounded-full"></div>
             <span className="text-sm font-medium">
-              Extracting metadata from files using AI...
+              Reading metadata from files...
             </span>
           </div>
           <p className="text-xs text-info/80 mt-1">
