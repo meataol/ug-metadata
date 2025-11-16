@@ -253,10 +253,15 @@ const FileProcessing = () => {
       
       // Save only the summary results (not the full file blobs)
       const resultsSummary = results.map(r => ({
-        filename: r.filename,
-        success: r.success,
-        error: r.error,
-        newFilename: r.newFilename
+        id: r.id || Date.now() + Math.random(),
+        originalName: r.filename,
+        newName: r.newFilename,
+        status: r.success ? 'success' : 'failed',
+        size: r.size || 0,
+        location: 'Browser Downloads folder',
+        processedAt: new Date().toISOString(),
+        error: r.error || null,
+        success: r.success
         // Don't save modifiedBlob - it's too large for localStorage
       }));
       
