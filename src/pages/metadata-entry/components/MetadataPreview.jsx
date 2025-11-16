@@ -67,28 +67,28 @@ const MetadataPreview = ({
             <div className="flex justify-between items-center p-3 bg-muted/30 rounded-lg">
               <span className="text-sm text-muted-foreground">Title:</span>
               <span className="text-sm font-medium text-foreground font-data">
-                {metadata?.title || 'Not set'}
+                {metadata?.title !== undefined && metadata?.title !== null ? metadata?.title : 'Not set'}
               </span>
             </div>
             
             <div className="flex justify-between items-center p-3 bg-muted/30 rounded-lg">
               <span className="text-sm text-muted-foreground">Artist:</span>
               <span className="text-sm font-medium text-foreground font-data">
-                {metadata?.artist || 'Not set'}
+                {metadata?.artist !== undefined && metadata?.artist !== null ? metadata?.artist : 'Not set'}
               </span>
             </div>
             
             <div className="flex justify-between items-center p-3 bg-muted/30 rounded-lg">
               <span className="text-sm text-muted-foreground">Album:</span>
               <span className="text-sm font-medium text-foreground font-data">
-                {metadata?.album || 'Not set'}
+                {metadata?.album !== undefined && metadata?.album !== null ? metadata?.album : 'Not set'}
               </span>
             </div>
             
             <div className="flex justify-between items-center p-3 bg-muted/30 rounded-lg">
               <span className="text-sm text-muted-foreground">Year:</span>
               <span className="text-sm font-medium text-foreground font-data">
-                {metadata?.year || 'Not set'}
+                {metadata?.year !== undefined && metadata?.year !== null ? metadata?.year : 'Not set'}
               </span>
             </div>
             
