@@ -251,8 +251,17 @@ const FileProcessing = () => {
         results: results
       };
       
+      // Save only the summary results (not the full file blobs)
+      const resultsSummary = results.map(r => ({
+        filename: r.filename,
+        success: r.success,
+        error: r.error,
+        newFilename: r.newFilename
+        // Don't save modifiedBlob - it's too large for localStorage
+      }));
+      
       localStorage.setItem('processingResults', JSON.stringify(finalResults));
-      localStorage.setItem('processedFiles', JSON.stringify(results));
+      localStorage.setItem('processedFiles', JSON.stringify(resultsSummary));
       
       // Update files state with results
       setFiles(prevFiles => prevFiles.map((file, index) => ({
@@ -264,6 +273,19 @@ const FileProcessing = () => {
         modifiedBlob: results[index]?.modifiedBlob || null,
         newFilename: results[index]?.newFilename || null
       })));
+      
+      // Automatically download all successfully processed files
+      console.log('🔽 Auto-downloading processed files...');
+      for (const result of results) {
+        if (result.success && result.modifiedBlob) {
+          try {
+            downloadFile(result.modifiedBlob, result.newFilename);
+            console.log(`✅ Downloaded: ${result.newFilename}`);
+          } catch (downloadError) {
+            console.error(`❌ Failed to download ${result.newFilename}:`, downloadError);
+          }
+        }
+      }
       
       setProcessingStatus('completed');
       setOverallProgress(100);
