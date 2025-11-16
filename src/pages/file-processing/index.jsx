@@ -346,6 +346,31 @@ const FileProcessing = () => {
     navigate('/cover-art-management');
   };
 
+  const handleClearAllAndRestart = () => {
+    // Clear all localStorage data
+    localStorage.removeItem('selectedFiles');
+    localStorage.removeItem('retagAllFiles');
+    localStorage.removeItem('coverArtData');
+    localStorage.removeItem('coverArtImage');
+    localStorage.removeItem('selectedCoverArt');
+    localStorage.removeItem('processingResults');
+    localStorage.removeItem('processedFiles');
+    localStorage.removeItem('ugMetadataManager_metadataConfig');
+    
+    // Reset all state
+    setFiles([]);
+    setProcessingStatus('idle');
+    setOverallProgress(0);
+    setCurrentFile(null);
+    setFilesProcessed(0);
+    setProcessingStartTime(null);
+    
+    console.log('✅ Cleared all data and state');
+    
+    // Navigate back to file selection
+    navigate('/file-selection');
+  };
+
   // Show message if no files
   if (files?.length === 0) {
     return (
@@ -419,15 +444,26 @@ const FileProcessing = () => {
             </Button>
             
             {processingStatus === 'completed' && (
-              <Button
-                variant="default"
-                onClick={handleNavigateToSummary}
-                iconName="ArrowRight"
-                iconPosition="right"
-                iconSize={16}
-              >
-                View Summary
-              </Button>
+              <>
+                <Button
+                  variant="outline"
+                  onClick={handleClearAllAndRestart}
+                  iconName="RotateCcw"
+                  iconPosition="left"
+                  iconSize={16}
+                >
+                  Clear All & Start Over
+                </Button>
+                <Button
+                  variant="default"
+                  onClick={handleNavigateToSummary}
+                  iconName="ArrowRight"
+                  iconPosition="right"
+                  iconSize={16}
+                >
+                  View Summary
+                </Button>
+              </>
             )}
           </div>
         </div>
