@@ -18,7 +18,6 @@ const FileSelection = () => {
   const [retagAllFiles, setRetagAllFiles] = useState(false);
   const [isProcessing, setIsProcessing] = useState(false);
   const [showUserGuide, setShowUserGuide] = useState(false);
-  const [destinationChoice, setDestinationChoice] = useState('default');
 
   // Add this block - Define acceptedFormats before using it
   const acceptedFormats = ['.mp3', '.m4a', '.wav', '.flac', '.mp4'];
@@ -270,7 +269,6 @@ const FileSelection = () => {
       
       localStorage.setItem('selectedFiles', JSON.stringify(selectedFileData));
       localStorage.setItem('retagAllFiles', JSON.stringify(retagAllFiles));
-      localStorage.setItem('destinationChoice', JSON.stringify(destinationChoice));
       
       navigate('/metadata-entry');
     }
@@ -280,7 +278,6 @@ const FileSelection = () => {
   useEffect(() => {
     const savedFiles = localStorage.getItem('selectedFiles');
     const savedRetagSetting = localStorage.getItem('retagAllFiles');
-    const savedDestination = localStorage.getItem('destinationChoice');
     
     if (savedFiles) {
       try {
@@ -303,14 +300,6 @@ const FileSelection = () => {
         setRetagAllFiles(JSON.parse(savedRetagSetting));
       } catch (error) {
         console.error('Error loading retag setting:', error);
-      }
-    }
-    
-    if (savedDestination) {
-      try {
-        setDestinationChoice(JSON.parse(savedDestination));
-      } catch (error) {
-        console.error('Error loading destination choice:', error);
       }
     }
   }, []);
@@ -400,78 +389,23 @@ const FileSelection = () => {
                 canProceed={canProceed}
               />
               
-              {/* Enhanced File Destination Guide with better colors */}
+              {/* Download Location Notice */}
               <div className="card-container">
                 <div className="p-6">
                   <h3 className="text-lg font-heading font-semibold text-foreground mb-4 flex items-center">
-                    <Icon name="Folder" size={20} className="mr-2 text-primary" />
-                    File Destination Options
+                    <Icon name="Download" size={20} className="mr-2 text-primary" />
+                    Download Location
                   </h3>
-                  <div className="space-y-4">
-                    <div className="space-y-3">
-                      <label className="flex items-start space-x-3 cursor-pointer p-3 rounded-lg border border-border hover:bg-muted/30 transition-colors">
-                        <input
-                          type="radio"
-                          name="destinationChoice"
-                          value="default"
-                          checked={destinationChoice === 'default'}
-                          onChange={(e) => setDestinationChoice(e?.target?.value)}
-                          className="mt-1 text-primary"
-                        />
-                        <div className="flex-1">
-                          <div className="text-sm font-medium text-foreground">Default Location</div>
-                          <div className="text-xs text-muted-foreground font-mono mt-1">
-                            {fileSystemUtils?.formatPathForDisplay(fileSystemUtils?.getDefaultProcessedDirectory())}
-                          </div>
-                        </div>
-                      </label>
-                      
-                      <label className="flex items-start space-x-3 cursor-pointer p-3 rounded-lg border border-border hover:bg-muted/30 transition-colors">
-                        <input
-                          type="radio"
-                          name="destinationChoice"
-                          value="source"
-                          checked={destinationChoice === 'source'}
-                          onChange={(e) => setDestinationChoice(e?.target?.value)}
-                          className="mt-1 text-primary"
-                        />
-                        <div className="flex-1">
-                          <div className="text-sm font-medium text-foreground">Same as Source Folder</div>
-                          <div className="text-xs text-muted-foreground">
-                            Save processed files in the same directory as original files
-                          </div>
-                        </div>
-                      </label>
-                      
-                      <label className="flex items-start space-x-3 cursor-pointer p-3 rounded-lg border border-border hover:bg-muted/30 transition-colors">
-                        <input
-                          type="radio"
-                          name="destinationChoice"
-                          value="custom"
-                          checked={destinationChoice === 'custom'}
-                          onChange={(e) => setDestinationChoice(e?.target?.value)}
-                          className="mt-1 text-primary"
-                        />
-                        <div className="flex-1">
-                          <div className="text-sm font-medium text-foreground">Ask During Processing</div>
-                          <div className="text-xs text-muted-foreground">
-                            Choose destination folder when processing starts
-                          </div>
-                        </div>
-                      </label>
+                  <div className="p-4 bg-info/10 border border-info/20 rounded-lg">
+                    <div className="flex items-start space-x-3">
+                      <Icon name="Info" size={20} className="text-info mt-0.5" />
+                      <div className="flex-1 text-sm text-info">
+                        <p className="font-medium mb-2">Processed files will be downloaded to your browser's Downloads folder</p>
+                        <p className="text-xs text-info/80">
+                          This is a web-based application. Files cannot be saved to custom locations. Check your browser's download settings to change the default Downloads folder.
+                        </p>
+                      </div>
                     </div>
-                    
-                    <Button
-                      variant="ghost"
-                      size="sm"
-                      onClick={() => fileSystemUtils?.openFileLocation(fileSystemUtils?.getDefaultProcessedDirectory())}
-                      iconName="ExternalLink"
-                      iconPosition="left"
-                      iconSize={14}
-                      className="w-full text-primary"
-                    >
-                      Copy default path & show instructions
-                    </Button>
                   </div>
                 </div>
               </div>
