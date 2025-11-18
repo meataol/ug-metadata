@@ -50,15 +50,7 @@ const ConfigurationSummary = ({
         }
       ]
     },
-    {
-      title: 'Destination Settings',
-      icon: 'Save',
-      items: [
-        { label: 'Destination', value: overwriteOriginal ? 'Overwrite original files' : formatPath(destinationFolder) },
-        { label: 'Renaming Template', value: renamingTemplate },
-        { label: 'File Organization', value: overwriteOriginal ? 'In-place modification' : 'Copy to destination' }
-      ]
-    },
+
     {
       title: 'Metadata Configuration',
       icon: 'Tag',
