@@ -544,10 +544,6 @@ const FileImportControls = ({
             <p><strong>Select Files:</strong> Choose individual audio/video files to process</p>
             <p><strong>Select Folder:</strong> Import all supported files from a directory</p>
             <p><strong>Process New Batch:</strong> Clear current selection and start over</p>
-            <p><strong>Destination:</strong> Configure where processed files will be saved</p>
-            {(isInIframe || !apiSupport?.directoryPicker) && (
-              <p className="text-warning"><strong>⚠️ Browser Limitation:</strong> Advanced folder selection may not work - use Default Location for best results</p>
-            )}
           </div>
         </div>
       </div>
