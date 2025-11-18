@@ -53,7 +53,7 @@ const FileProcessing = () => {
       }
       
       // ENHANCED: Enhanced destination path handling with user's actual path and better display
-      let finalDestinationPath = 'C:\\Users\\EugenManole\\OneDrive - Hilton\\Documents 1\\UG_Metadata_Manager';
+      let finalDestinationPath = 'Browser Downloads folder';
       
       if (savedDestination) {
         try {
@@ -81,12 +81,12 @@ const FileProcessing = () => {
               break;
             case 'default':
             default:
-              finalDestinationPath = 'C:\\Users\\EugenManole\\OneDrive - Hilton\\Documents 1\\UG_Metadata_Manager';
+              finalDestinationPath = 'Browser Downloads folder';
               break;
           }
         } catch (error) {
           console.error('Error loading destination choice:', error);
-          finalDestinationPath = 'C:\\Users\\EugenManole\\OneDrive - Hilton\\Documents 1\\UG_Metadata_Manager (default due to error)';
+          finalDestinationPath = 'Browser Downloads folder (default due to error)';
         }
       }
       
@@ -318,6 +318,7 @@ const FileProcessing = () => {
       
       setProcessingStatus('completed');
       setOverallProgress(100);
+      setFilesProcessed(results.length);
       setCurrentFile(null);
       
     } catch (error) {

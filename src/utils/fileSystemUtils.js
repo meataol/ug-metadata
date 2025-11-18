@@ -17,14 +17,8 @@ export const fileSystemUtils = {
 
   // Get default processed files directory (browser-compatible)
   getDefaultProcessedDirectory: () => {
-    const homeDir = fileSystemUtils?.getUserHomeDirectory();
-    const platform = navigator?.userAgentData?.platform || navigator?.platform;
-    
-    if (platform?.toLowerCase()?.includes('win') || navigator?.userAgent?.includes('Windows')) {
-      return `${homeDir}\\Documents\\UG_Metadata_Manager`;
-    } else {
-      return `${homeDir}/Documents/UG_Metadata_Manager`;
-    }
+    // In browser environment, files are downloaded to the browser's Downloads folder
+    return 'Browser Downloads folder';
   },
 
   // Enhanced folder creation instructions

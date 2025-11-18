@@ -50,7 +50,7 @@ const FileImportControls = ({
             console.error('Error loading saved path:', error);
           }
         } else if (choice === 'default') {
-          setDestinationPath('C:\\Users\\EugenManole\\OneDrive - Hilton\\Documents 1\\UG_Metadata_Manager');
+          setDestinationPath('Browser Downloads folder');
         } else if (choice === 'source') {
           setDestinationPath('Same as source files');
         }
@@ -164,7 +164,7 @@ const FileImportControls = ({
       alert(errorMessage);
       
       // Suggest switching to default
-      const useDefault = confirm('Would you like to use the default location instead?\n\nC:\\Users\\EugenManole\\OneDrive - Hilton\\Documents 1\\UG_Metadata_Manager');
+      const useDefault = confirm('Would you like to use the default location instead?\n\nBrowser Downloads folder');
       if (useDefault) {
         handleDestinationChoiceChange('default');
       }
@@ -201,9 +201,9 @@ const FileImportControls = ({
         localStorage.setItem('destinationChoice', JSON.stringify('source'));
         localStorage.removeItem('destinationPath');
         break;
-      case 'default': setDestinationPath('C:\\Users\\EugenManole\\OneDrive - Hilton\\Documents 1\\UG_Metadata_Manager');
+      case 'default': setDestinationPath('Browser Downloads folder');
         localStorage.setItem('destinationChoice', JSON.stringify('default'));
-        localStorage.setItem('destinationPath', JSON.stringify('C:\\Users\\EugenManole\\OneDrive - Hilton\\Documents 1\\UG_Metadata_Manager'));
+        localStorage.setItem('destinationPath', JSON.stringify('Browser Downloads folder'));
         break;
       case 'custom':
         if (!destinationPath || destinationPath === 'Same as source files') {
@@ -525,7 +525,7 @@ const FileImportControls = ({
             <span className="text-sm font-medium">Active Setting:</span>
           </div>
           <div className="text-sm mt-1 font-mono">
-            {destinationChoice === 'default' && '📁 C:\\Users\\EugenManole\\OneDrive - Hilton\\Documents 1\\UG_Metadata_Manager'}
+            {destinationChoice === 'default' && '📁 Browser Downloads folder'}
             {destinationChoice === 'source' && '📁 Files will be processed in their original locations'}
             {destinationChoice === 'custom' && destinationPath && `📁 ${destinationPath}`}
             {destinationChoice === 'custom' && !destinationPath && '📁 No custom folder selected yet'}

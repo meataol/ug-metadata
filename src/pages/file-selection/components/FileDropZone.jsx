@@ -3,7 +3,7 @@ import Icon from '../../../components/AppIcon';
 
 const FileDropZone = ({ 
   onFilesDropped, 
-  acceptedFormats = ['.mp3', '.m4a', '.wav', '.flac', '.mp4'],
+  acceptedFormats = ['.mp3'],
   isProcessing = false 
 }) => {
   const [isDragOver, setIsDragOver] = useState(false);
@@ -14,8 +14,7 @@ const FileDropZone = ({
     
     // Also check MIME type for better mobile compatibility
     const validMimeTypes = [
-      'audio/mpeg', 'audio/mp4', 'audio/wav', 'audio/flac',
-      'video/mp4', 'video/quicktime', 'video/x-msvideo'
+      'audio/mpeg'
     ];
     const isValidMimeType = validMimeTypes?.includes(file?.type);
     

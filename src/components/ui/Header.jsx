@@ -211,8 +211,7 @@ const Header = () => {
                 <div className="space-y-2">
                   <div className="p-3 bg-muted/30 rounded-lg">
                     <div className="text-sm font-medium text-foreground mb-1">Default Processed Files Location:</div>
-                    <div className="text-xs font-mono text-muted-foreground">{window.navigator?.userAgent?.includes('Windows') ? 
-                      'C:\\Users\\[username]\\Documents\\UG_Metadata_Manager\\ProcessedFiles': '/Users/[username]/Documents/UG_Metadata_Manager/ProcessedFiles'}</div>
+                    <div className="text-xs font-mono text-muted-foreground">Browser Downloads folder</div>
                   </div>
                   <div className="text-xs text-muted-foreground">
                     💡 <strong>Tip:</strong> During processing, you can choose to save files to the same folder as originals or select a custom location.

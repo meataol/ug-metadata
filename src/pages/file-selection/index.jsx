@@ -22,7 +22,7 @@ const FileSelection = () => {
   const [destinationChoice, setDestinationChoice] = useState('default');
 
   // Add this block - Define acceptedFormats before using it
-  const acceptedFormats = ['.mp3', '.m4a', '.wav', '.flac', '.mp4'];
+  const acceptedFormats = ['.mp3'];
 
   // Enhanced file processing with OpenAI metadata extraction
   const processFiles = async (files) => {

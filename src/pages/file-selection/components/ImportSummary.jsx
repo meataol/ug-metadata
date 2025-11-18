@@ -112,7 +112,7 @@ const ImportSummary = ({
               <span>Audio Files</span>
             </div>
             <div className="space-y-1">
-              {['MP3', 'M4A', 'WAV', 'FLAC']?.map((format) => (
+              {['MP3']?.map((format) => (
                 <div key={format} className="text-xs text-muted-foreground font-data">
                   {format}
                 </div>
@@ -121,16 +121,9 @@ const ImportSummary = ({
           </div>
           
           <div>
-            <div className="text-sm font-medium text-foreground mb-2 flex items-center space-x-2">
-              <Icon name="Video" size={16} />
-              <span>Video Files</span>
-            </div>
-            <div className="space-y-1">
-              {['MP4']?.map((format) => (
-                <div key={format} className="text-xs text-muted-foreground font-data">
-                  {format}
-                </div>
-              ))}
+            <div className="text-sm font-medium text-muted-foreground mb-2 flex items-center space-x-2">
+              <Icon name="Info" size={16} />
+              <span className="text-xs">Other formats (M4A, WAV, FLAC, MP4) are read-only</span>
             </div>
           </div>
         </div>
