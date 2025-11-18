@@ -373,7 +373,7 @@ const FileImportControls = ({
           <div className="flex items-center space-x-2 text-info">
             <div className="animate-spin w-4 h-4 border-2 border-info border-t-transparent rounded-full"></div>
             <span className="text-sm font-medium">
-              Reading metadata from files...
+              Extracting metadata from files using AI...
             </span>
           </div>
           <p className="text-xs text-info/80 mt-1">
@@ -382,21 +382,153 @@ const FileImportControls = ({
         </div>
       )}
 
-      {/* Download Location Notice */}
+      {/* ENHANCED Destination Folder Configuration */}
       <div className="mt-6 bg-muted/30 border border-border rounded-lg p-4">
-        <h3 className="text-base font-heading font-semibold text-foreground flex items-center mb-3">
-          <Icon name="Download" size={20} className="mr-2 text-primary" />
-          Download Location
-        </h3>
-        <div className="p-4 bg-info/10 border border-info/20 rounded-lg">
-          <div className="flex items-start space-x-3">
-            <Icon name="Info" size={20} className="text-info mt-0.5" />
-            <div className="flex-1 text-sm text-info">
-              <p className="font-medium mb-2">Processed files will be downloaded to your browser's Downloads folder</p>
-              <p className="text-xs text-info/80">
-                This is a web-based application. Files cannot be saved to custom locations. Check your browser's download settings to change the default Downloads folder.
-              </p>
+        <div className="flex items-center justify-between mb-4">
+          <h3 className="text-base font-heading font-semibold text-foreground flex items-center">
+            <Icon name="FolderOpen" size={20} className="mr-2 text-primary" />
+            Destination Folder Settings
+          </h3>
+          <div className="text-xs text-muted-foreground">
+            Where processed files will be saved
+          </div>
+        </div>
+        
+        {/* Browser Compatibility Notice */}
+        {(!apiSupport?.directoryPicker || isInIframe) && (
+          <div className="mb-4 p-3 bg-warning/10 border border-warning/20 rounded-lg">
+            <div className="flex items-center space-x-2 text-warning">
+              <Icon name="AlertTriangle" size={14} />
+              <span className="text-sm font-medium">
+                {isInIframe 
+                  ? "Limited functionality in iframe mode" 
+                  : "Browser has limited folder selection support"}
+              </span>
             </div>
+            <p className="text-xs text-warning/80 mt-1">
+              {isInIframe 
+                ? "For full functionality, open this app in a new browser tab" :"Try using Chrome, Edge, or Firefox for better folder selection"}
+            </p>
+          </div>
+        )}
+        
+        {/* Destination Options */}
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-3 mb-4">
+          <label className="flex items-center space-x-2 cursor-pointer p-3 border border-border rounded-lg hover:bg-muted/50 transition-colors">
+            <input
+              type="radio"
+              name="destinationChoice"
+              value="default"
+              checked={destinationChoice === 'default'}
+              onChange={(e) => handleDestinationChoiceChange(e?.target?.value)}
+              className="text-primary"
+            />
+            <div className="flex-1">
+              <div className="text-sm font-medium text-foreground">Default Location</div>
+              <div className="text-xs text-muted-foreground">Your Documents folder</div>
+              <div className="text-xs text-success">✅ Always works</div>
+            </div>
+          </label>
+          
+          <label className="flex items-center space-x-2 cursor-pointer p-3 border border-border rounded-lg hover:bg-muted/50 transition-colors">
+            <input
+              type="radio"
+              name="destinationChoice"
+              value="source"
+              checked={destinationChoice === 'source'}
+              onChange={(e) => handleDestinationChoiceChange(e?.target?.value)}
+              className="text-primary"
+            />
+            <div className="flex-1">
+              <div className="text-sm font-medium text-foreground">Same as Source</div>
+              <div className="text-xs text-muted-foreground">Original file locations</div>
+              <div className="text-xs text-success">✅ No file moving</div>
+            </div>
+          </label>
+          
+          <label className="flex items-center space-x-2 cursor-pointer p-3 border border-border rounded-lg hover:bg-muted/50 transition-colors">
+            <input
+              type="radio"
+              name="destinationChoice"
+              value="custom"
+              checked={destinationChoice === 'custom'}
+              onChange={(e) => handleDestinationChoiceChange(e?.target?.value)}
+              className="text-primary"
+            />
+            <div className="flex-1">
+              <div className="text-sm font-medium text-foreground">Custom Folder</div>
+              <div className="text-xs text-muted-foreground">Choose specific location</div>
+              {(!apiSupport?.directoryPicker || isInIframe) && (
+                <div className="text-xs text-warning">⚠️ Limited support</div>
+              )}
+            </div>
+          </label>
+        </div>
+
+        {/* Custom Folder Selection - ENHANCED */}
+        {destinationChoice === 'custom' && (
+          <div className="border border-border rounded-lg p-3 bg-background">
+            <div className="flex items-center justify-between mb-2">
+              <label className="text-sm font-medium text-foreground">
+                Custom Destination Path
+              </label>
+              <Button
+                variant="outline"
+                size="sm"
+                onClick={handleSelectDestinationFolder}
+                disabled={isProcessing}
+                iconName="FolderOpen"
+                iconPosition="left"
+                iconSize={14}
+                className="text-xs"
+              >
+                {apiSupport?.directoryPicker && !isInIframe ? 'Browse Folder' : 'Try Select'}
+              </Button>
+            </div>
+            
+            {/* Show current selection or guidance */}
+            {destinationPath && destinationChoice === 'custom' && destinationPath !== '' ? (
+              <div className="flex items-center justify-between p-2 bg-success/10 border border-success/20 rounded text-success">
+                <div className="flex items-center space-x-2">
+                  <Icon name="CheckCircle" size={16} />
+                  <span className="text-sm font-medium">📁 {destinationPath}</span>
+                </div>
+                <Button
+                  variant="ghost"
+                  size="sm"
+                  onClick={() => {
+                    setDestinationPath('');
+                    localStorage.removeItem('destinationPath');
+                  }}
+                  iconName="X"
+                  iconSize={14}
+                  className="text-success hover:text-success-foreground"
+                />
+              </div>
+            ) : (
+              <div className="text-xs text-muted-foreground italic p-2 border border-dashed border-border rounded">
+                {apiSupport?.directoryPicker && !isInIframe
+                  ? 'Click "Browse Folder" to select your custom destination folder'
+                  : isInIframe 
+                    ? 'Folder selection limited in iframe mode - consider using Default Location'
+                    : 'Limited browser support - try using Chrome, Edge, or Firefox'
+                }
+              </div>
+            )}
+          </div>
+        )}
+
+        {/* Current Setting Display */}
+        <div className="mt-3 p-3 bg-info/10 border border-info/20 rounded text-info">
+          <div className="flex items-center space-x-2">
+            <Icon name="Info" size={14} />
+            <span className="text-sm font-medium">Active Setting:</span>
+          </div>
+          <div className="text-sm mt-1 font-mono">
+            {destinationChoice === 'default' && '📁 C:\\Users\\EugenManole\\OneDrive - Hilton\\Documents 1\\UG_Metadata_Manager'}
+            {destinationChoice === 'source' && '📁 Files will be processed in their original locations'}
+            {destinationChoice === 'custom' && destinationPath && `📁 ${destinationPath}`}
+            {destinationChoice === 'custom' && !destinationPath && '📁 No custom folder selected yet'}
           </div>
         </div>
       </div>
@@ -412,7 +544,10 @@ const FileImportControls = ({
             <p><strong>Select Files:</strong> Choose individual audio/video files to process</p>
             <p><strong>Select Folder:</strong> Import all supported files from a directory</p>
             <p><strong>Process New Batch:</strong> Clear current selection and start over</p>
-            <p><strong>Download Location:</strong> Processed files will be saved to your browser's Downloads folder</p>
+            <p><strong>Destination:</strong> Configure where processed files will be saved</p>
+            {(isInIframe || !apiSupport?.directoryPicker) && (
+              <p className="text-warning"><strong>⚠️ Browser Limitation:</strong> Advanced folder selection may not work - use Default Location for best results</p>
+            )}
           </div>
         </div>
       </div>

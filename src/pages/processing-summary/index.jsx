@@ -282,9 +282,11 @@ const ProcessingSummary = () => {
       } else if (format === 'csv') {
         const csvContent = [
           'Original Name,New Name,Status,Size,Location,Processed At,Error',
-          ...filteredFiles?.map(file => 
-            `"${file?.originalName}","${file?.newName || ''}","${file?.status}","${file?.size}","${file?.location}","${new Date(file?.processedAt)?.toLocaleString()}","${file?.error || ''}"`
-          )
+          ...filteredFiles?.map(file => {
+            const processedTime = file?.processedAt ? new Date(file?.processedAt)?.toLocaleString() : 'Not processed';
+            const actualStatus = file?.status === 'preview' ? 'PENDING' : file?.status?.toUpperCase();
+            return `"${file?.originalName}","${file?.newName || ''}","${actualStatus}","${file?.size}","${file?.location}","${processedTime}","${file?.error || ''}"`;
+          })
         ]?.join('\n');
         
         const blob = new Blob([csvContent], { type: 'text/csv' });
@@ -308,12 +310,16 @@ Failed: ${processingResults?.failedFiles || 0}
 Skipped: ${processingResults?.skippedFiles || 0}
 
 DETAILED RESULTS:
-${filteredFiles?.map(file => `
+${filteredFiles?.map(file => {
+  const processedTime = file?.processedAt ? new Date(file?.processedAt)?.toLocaleString() : 'Not processed yet';
+  const actualStatus = file?.status === 'preview' ? 'PENDING' : (file?.success ? 'SUCCESS' : (file?.error ? 'FAILED' : file?.status?.toUpperCase()));
+  return `
 ${file?.originalName} -> ${file?.newName || 'N/A'}
-Status: ${file?.status?.toUpperCase()}
-Processed: ${new Date(file?.processedAt)?.toLocaleString()}
+Status: ${actualStatus}
+Processed: ${processedTime}
 ${file?.error ? `Error: ${file?.error}` : ''}
-`)?.join('')}`;
+`;
+})?.join('')}`;
 
         const blob = new Blob([txtContent], { type: 'text/plain' });
         const url = URL.createObjectURL(blob);

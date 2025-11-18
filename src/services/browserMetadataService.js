@@ -7,8 +7,7 @@
  */
 
 import * as mm from 'music-metadata-browser';
-import * as ID3WriterModule from 'browser-id3-writer';
-const ID3Writer = ID3WriterModule.default || ID3WriterModule;
+import { ID3Writer } from 'browser-id3-writer';
 
 /**
  * Read metadata from an audio file

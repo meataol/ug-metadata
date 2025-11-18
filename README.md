@@ -1,50 +1,96 @@
-# UG Metadata Manager
+# React
 
-A web-based tool for embedding metadata in audio and video files for YouTube uploads. This application allows you to upload your files, edit their metadata (title, artist, album, etc.), add cover art, and download the processed files with the new metadata embedded.
+A modern React-based project utilizing the latest frontend technologies and tools for building responsive web applications.
 
 ## 🚀 Features
 
--   **File Upload:** Upload audio and video files from your computer.
--   **Metadata Editing:** Edit common metadata fields such as title, artist, album, year, and comments.
--   **Cover Art:** Upload and embed cover art into your files.
--   **Batch Processing:** Apply the same metadata to multiple files at once.
--   **Individual Processing:** Customize metadata for each file individually.
--   **Automatic Download:** Processed files are automatically downloaded to your browser's Downloads folder.
--   **Processing Summary:** View a summary of the processing results, including successful and failed files.
+- **React 18** - React version with improved rendering and concurrent features
+- **Vite** - Lightning-fast build tool and development server
+- **Redux Toolkit** - State management with simplified Redux setup
+- **TailwindCSS** - Utility-first CSS framework with extensive customization
+- **React Router v6** - Declarative routing for React applications
+- **Data Visualization** - Integrated D3.js and Recharts for powerful data visualization
+- **Form Management** - React Hook Form for efficient form handling
+- **Animation** - Framer Motion for smooth UI animations
+- **Testing** - Jest and React Testing Library setup
 
-## 📋 How to Use
+## 📋 Prerequisites
 
-1.  **Upload Files:** Drag and drop your audio/video files into the application, or click "Browse Files" to select them from your computer.
-2.  **Edit Metadata:**
-    *   **Batch Mode:** Enter the metadata you want to apply to all files in the batch.
-    *   **Individual Mode:** Navigate through each file and enter its specific metadata.
-3.  **Add Cover Art:** Upload a cover art image to be embedded in your files.
-4.  **Process Files:** Click "Start Processing" to begin embedding the metadata and cover art.
-5.  **Download Files:** The processed files will be automatically downloaded to your browser's Downloads folder.
-6.  **View Summary:** After processing is complete, you can view a summary of the results.
-7.  **Clear and Restart:** Click "Clear All & Start Over" to reset the application and start a new batch.
+- Node.js (v14.x or higher)
+- npm or yarn
 
-## 🛠️ Key Technologies
+## 🛠️ Installation
 
--   **React 18:** A JavaScript library for building user interfaces.
--   **Vite:** A fast build tool and development server.
--   **TailwindCSS:** A utility-first CSS framework.
--   **music-metadata-browser:** A library for reading and writing audio metadata in the browser.
--   **browser-id3-writer:** A library for writing ID3 tags to MP3 files in the browser.
+1. Install dependencies:
+   ```bash
+   npm install
+   # or
+   yarn install
+   ```
+   
+2. Start the development server:
+   ```bash
+   npm start
+   # or
+   yarn start
+   ```
 
-## 📦 Installation
+## 📁 Project Structure
 
-1.  Install dependencies:
-    ```bash
-    npm install
-    ```
+```
+react_app/
+├── public/             # Static assets
+├── src/
+│   ├── components/     # Reusable UI components
+│   ├── pages/          # Page components
+│   ├── styles/         # Global styles and Tailwind configuration
+│   ├── App.jsx         # Main application component
+│   ├── Routes.jsx      # Application routes
+│   └── index.jsx       # Application entry point
+├── .env                # Environment variables
+├── index.html          # HTML template
+├── package.json        # Project dependencies and scripts
+├── tailwind.config.js  # Tailwind CSS configuration
+└── vite.config.js      # Vite configuration
+```
 
-2.  Start the development server:
-    ```bash
-    npm start
-    ```
+## 🧩 Adding Routes
 
-## 🚀 Deployment
+To add new routes to the application, update the `Routes.jsx` file:
+
+```jsx
+import { useRoutes } from "react-router-dom";
+import HomePage from "pages/HomePage";
+import AboutPage from "pages/AboutPage";
+
+const ProjectRoutes = () => {
+  let element = useRoutes([
+    { path: "/", element: <HomePage /> },
+    { path: "/about", element: <AboutPage /> },
+    // Add more routes as needed
+  ]);
+
+  return element;
+};
+```
+
+## 🎨 Styling
+
+This project uses Tailwind CSS for styling. The configuration includes:
+
+- Forms plugin for form styling
+- Typography plugin for text styling
+- Aspect ratio plugin for responsive elements
+- Container queries for component-specific responsive design
+- Fluid typography for responsive text
+- Animation utilities
+
+## 📱 Responsive Design
+
+The app is built with responsive design using Tailwind CSS breakpoints.
+
+
+## 📦 Deployment
 
 Build the application for production:
 
@@ -54,6 +100,8 @@ npm run build
 
 ## 🙏 Acknowledgments
 
--   Built with [Rocket.new](https://rocket.new)
--   Powered by React and Vite
--   Styled with Tailwind CSS
+- Built with [Rocket.new](https://rocket.new)
+- Powered by React and Vite
+- Styled with Tailwind CSS
+
+Built with ❤️ on Rocket.new

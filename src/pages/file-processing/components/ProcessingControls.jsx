@@ -9,12 +9,14 @@ const ProcessingControls = ({
   onResume,
   onCancel,
   onReset,
+  onClearAll,
   canStart = true,
   hasFiles = false,
   showEmergencyStop = false
 }) => {
   const [showCancelConfirm, setShowCancelConfirm] = useState(false);
   const [showResetConfirm, setShowResetConfirm] = useState(false);
+  const [showClearConfirm, setShowClearConfirm] = useState(false);
 
   const handleCancel = () => {
     if (status === 'processing') {
@@ -121,8 +123,32 @@ const ProcessingControls = ({
     }
   };
 
+  const handleClearAll = () => {
+    setShowClearConfirm(true);
+  };
+
+  const confirmClearAll = () => {
+    onClearAll?.();
+    setShowClearConfirm(false);
+  };
+
   const getSecondaryActions = () => {
     const actions = [];
+
+    if (status === 'idle' && hasFiles) {
+      actions?.push(
+        <Button
+          key="clear"
+          variant="outline"
+          onClick={handleClearAll}
+          iconName="Trash2"
+          iconPosition="left"
+          iconSize={16}
+        >
+          Clear All & Start Over
+        </Button>
+      );
+    }
 
     if (status === 'processing' || status === 'paused') {
       actions?.push(
@@ -261,6 +287,43 @@ const ProcessingControls = ({
                 iconSize={16}
               >
                 Cancel Processing
+              </Button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Clear All Confirmation Modal */}
+      {showClearConfirm && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/50 backdrop-blur-sm">
+          <div className="bg-card border border-border rounded-lg shadow-elevated max-w-md w-full p-6">
+            <div className="flex items-start space-x-3">
+              <Icon name="Trash2" size={24} className="text-error mt-1" />
+              <div className="flex-1">
+                <h3 className="text-lg font-heading font-semibold text-foreground">
+                  Clear All Files & Start Over?
+                </h3>
+                <p className="text-sm text-muted-foreground mt-2">
+                  This will remove all files from the queue and clear all metadata settings. You will need to select files again from the beginning. This action cannot be undone.
+                </p>
+              </div>
+            </div>
+            
+            <div className="flex items-center justify-end space-x-3 mt-6">
+              <Button
+                variant="outline"
+                onClick={() => setShowClearConfirm(false)}
+              >
+                Keep Files
+              </Button>
+              <Button
+                variant="destructive"
+                onClick={confirmClearAll}
+                iconName="Trash2"
+                iconPosition="left"
+                iconSize={16}
+              >
+                Clear All & Start Over
               </Button>
             </div>
           </div>

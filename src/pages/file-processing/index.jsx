@@ -9,6 +9,7 @@ import ConfigurationSummary from './components/ConfigurationSummary';
 import ProcessingControls from './components/ProcessingControls';
 import Button from '../../components/ui/Button';
 import Icon from '../../components/AppIcon';
+import { getAllFiles, getFile, debugStore } from '../../utils/fileStore';
 
 
 const FileProcessing = () => {
@@ -221,12 +222,39 @@ const FileProcessing = () => {
         }
       });
       
-      // Get actual File objects from files (they should have been stored)
-      const fileObjects = files.map(f => f.fileObject).filter(Boolean);
+      // Get actual File objects from global file store
+      console.log('📂 Retrieving File objects from global store...');
+      debugStore(); // Debug log
+      
+      const storedFiles = getAllFiles();
+      console.log(`📋 Found ${storedFiles.length} files in store`);
+      
+      if (storedFiles.length === 0) {
+        // Fallback: try to get from files array (legacy)
+        const fileObjects = files.map(f => f.fileObject).filter(Boolean);
+        if (fileObjects.length === 0) {
+          throw new Error('No file objects available. Please select files again.');
+        }
+        console.log('⚠️ Using legacy file objects from state');
+      }
+      
+      // Map stored files to file objects, matching by file ID
+      const fileObjects = files.map(file => {
+        const stored = storedFiles.find(sf => sf.fileId === file.id);
+        if (stored && stored.fileObject) {
+          console.log(`✅ Found File object for: ${file.name}`);
+          return stored.fileObject;
+        }
+        console.warn(`⚠️ No File object found for: ${file.name}`);
+        return null;
+      }).filter(Boolean);
       
       if (fileObjects.length === 0) {
-        throw new Error('No file objects available. Please select files again.');
+        throw new Error('No file objects available. Please go back to File Selection and select files again.');
       }
+      
+      console.log(`🎯 Ready to process ${fileObjects.length} files`);
+      fileObjects.forEach((f, i) => console.log(`  ${i + 1}. ${f.name} (${(f.size / 1024).toFixed(1)} KB)`));
       
       // Process files with progress callback
       const results = await batchProcessFiles(fileObjects, metadata, options, (progress) => {
@@ -240,6 +268,16 @@ const FileProcessing = () => {
       const failed = results.filter(r => !r.success).length;
       const processingTime = Math.floor((Date.now() - processingStartTime) / 1000);
       
+      // Save only the summary results (not the full file blobs)
+      const resultsSummary = results.map(r => ({
+        filename: r.filename,
+        success: r.success,
+        error: r.error,
+        newFilename: r.newFilename,
+        timestamp: new Date().toISOString()
+        // Don't save modifiedBlob - it's too large for localStorage
+      }));
+      
       const finalResults = {
         totalFiles: results.length,
         successfulFiles: successful,
@@ -248,22 +286,8 @@ const FileProcessing = () => {
         processingTime: processingTime,
         startTime: new Date(processingStartTime).toISOString(),
         endTime: new Date().toISOString(),
-        results: results
+        results: resultsSummary  // Use summary instead of full results
       };
-      
-      // Save only the summary results (not the full file blobs)
-      const resultsSummary = results.map(r => ({
-        id: r.id || Date.now() + Math.random(),
-        originalName: r.filename,
-        newName: r.newFilename,
-        status: r.success ? 'success' : 'failed',
-        size: r.size || 0,
-        location: 'Browser Downloads folder',
-        processedAt: new Date().toISOString(),
-        error: r.error || null,
-        success: r.success
-        // Don't save modifiedBlob - it's too large for localStorage
-      }));
       
       localStorage.setItem('processingResults', JSON.stringify(finalResults));
       localStorage.setItem('processedFiles', JSON.stringify(resultsSummary));
@@ -351,26 +375,21 @@ const FileProcessing = () => {
     navigate('/cover-art-management');
   };
 
-  const handleClearAllAndRestart = () => {
-    // Clear all localStorage data
-    localStorage.removeItem('selectedFiles');
-    localStorage.removeItem('retagAllFiles');
-    localStorage.removeItem('coverArtData');
-    localStorage.removeItem('coverArtImage');
-    localStorage.removeItem('selectedCoverArt');
-    localStorage.removeItem('processingResults');
-    localStorage.removeItem('processedFiles');
-    localStorage.removeItem('ugMetadataManager_metadataConfig');
-    
-    // Reset all state
+  const handleClearAll = () => {
+    // Clear all files and localStorage
     setFiles([]);
     setProcessingStatus('idle');
     setOverallProgress(0);
     setCurrentFile(null);
     setFilesProcessed(0);
-    setProcessingStartTime(null);
     
-    console.log('✅ Cleared all data and state');
+    // Clear all localStorage
+    localStorage.removeItem('selectedFiles');
+    localStorage.removeItem('ugMetadataManager_metadataConfig');
+    localStorage.removeItem('coverArtData');
+    localStorage.removeItem('processingResults');
+    localStorage.removeItem('processedFiles');
+    localStorage.removeItem('fileProcessingQueue');
     
     // Navigate back to file selection
     navigate('/file-selection');
@@ -449,26 +468,15 @@ const FileProcessing = () => {
             </Button>
             
             {processingStatus === 'completed' && (
-              <>
-                <Button
-                  variant="outline"
-                  onClick={handleClearAllAndRestart}
-                  iconName="RotateCcw"
-                  iconPosition="left"
-                  iconSize={16}
-                >
-                  Clear All & Start Over
-                </Button>
-                <Button
-                  variant="default"
-                  onClick={handleNavigateToSummary}
-                  iconName="ArrowRight"
-                  iconPosition="right"
-                  iconSize={16}
-                >
-                  View Summary
-                </Button>
-              </>
+              <Button
+                variant="default"
+                onClick={handleNavigateToSummary}
+                iconName="ArrowRight"
+                iconPosition="right"
+                iconSize={16}
+              >
+                View Summary
+              </Button>
             )}
           </div>
         </div>
@@ -481,6 +489,7 @@ const FileProcessing = () => {
           onResume={handleResumeProcessing}
           onCancel={handleCancelProcessing}
           onReset={handleResetProcessing}
+          onClearAll={handleClearAll}
           canStart={files?.length > 0}
           hasFiles={files?.length > 0}
           showEmergencyStop={processingStatus === 'processing'}

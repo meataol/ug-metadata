@@ -9,6 +9,8 @@ import ImportSummary from './components/ImportSummary';
 import { fileSystemUtils } from '../../utils/fileSystemUtils';
 import Icon from '../../components/AppIcon';
 import Button from '../../components/ui/Button';
+import { extractMetadataWithAI } from '../../services/metadataService';
+import { storeFiles, clearAllFiles, debugStore } from '../../utils/fileStore';
 
 const FileSelection = () => {
   const navigate = useNavigate();
@@ -17,14 +19,15 @@ const FileSelection = () => {
   const [retagAllFiles, setRetagAllFiles] = useState(false);
   const [isProcessing, setIsProcessing] = useState(false);
   const [showUserGuide, setShowUserGuide] = useState(false);
+  const [destinationChoice, setDestinationChoice] = useState('default');
 
   // Add this block - Define acceptedFormats before using it
   const acceptedFormats = ['.mp3', '.m4a', '.wav', '.flac', '.mp4'];
 
-  // File processing with basic metadata extraction
+  // Enhanced file processing with OpenAI metadata extraction
   const processFiles = async (files) => {
     setIsProcessing(true);
-    console.log(`🔄 Processing ${files?.length} files...`);
+    console.log(`🔄 Processing ${files?.length} files with AI metadata extraction...`);
     
     const processedFiles = [];
     
@@ -32,14 +35,8 @@ const FileSelection = () => {
       const file = files?.[i];
       
       try {
-        // Extract basic metadata from filename
-        const extractedMetadata = {
-          title: file?.name?.replace(/\.[^/.]+$/, '') || 'Untitled',
-          artist: '',
-          album: '',
-          year: '',
-          genre: ''
-        };
+        // Extract metadata using OpenAI
+        const aiMetadata = await extractMetadataWithAI(file?.name, file?.size, file?.type);
         
         const fileData = {
           id: `file_${Date.now()}_${i}`,
@@ -48,23 +45,26 @@ const FileSelection = () => {
           type: file?.type,
           lastModified: new Date(file.lastModified)?.toLocaleDateString(),
           fileObject: file, // Store the actual File object for processing
-          // Use extracted metadata from filename
-          title: extractedMetadata?.title,
-          artist: extractedMetadata?.artist,
-          album: extractedMetadata?.album,
-          year: extractedMetadata?.year,
-          genre: extractedMetadata?.genre,
+          // Use AI-extracted metadata instead of hardcoded values
+          title: aiMetadata?.title,
+          artist: aiMetadata?.artist,
+          album: aiMetadata?.album,
+          year: aiMetadata?.year,
+          genre: aiMetadata?.genre,
           hasUGTag: false, // Will be determined by actual file analysis
           status: 'ready',
-          selected: true
+          selected: true,
+          extractionMethod: aiMetadata?.extractedBy,
+          confidence: aiMetadata?.confidence,
+          extractedAt: aiMetadata?.timestamp
         };
         
         processedFiles?.push(fileData);
-        console.log(`✅ Processed: ${file?.name} - ${extractedMetadata?.title}`);
+        console.log(`✅ Processed: ${file?.name} - ${aiMetadata?.title} by ${aiMetadata?.artist}`);
       } catch (error) {
         console.error(`❌ Error processing ${file?.name}:`, error);
         
-        // Fallback processing on error
+        // Fallback processing without AI
         const fileData = {
           id: `file_${Date.now()}_${i}`,
           name: file?.name,
@@ -73,13 +73,14 @@ const FileSelection = () => {
           lastModified: new Date(file.lastModified)?.toLocaleDateString(),
           fileObject: file, // Store the actual File object for processing
           title: file?.name?.replace(/\.[^/.]+$/, ''),
-          artist: '',
-          album: '',
-          year: '',
-          genre: '',
+          artist: 'Unknown Artist',
+          album: 'Unknown Album',
+          year: new Date()?.getFullYear()?.toString(),
+          genre: 'Unknown',
           hasUGTag: false,
           status: 'error',
           selected: true,
+          extractionMethod: 'fallback',
           error: error?.message
         };
         
@@ -261,15 +262,40 @@ const FileSelection = () => {
   // Enhanced proceed to next step with proper state persistence
   const handleProceedToNext = () => {
     if (getFilesToProcess() > 0) {
-      // Store selected files in localStorage for next step with enhanced data
+      // Store selected files data
       const selectedFileData = files?.filter(f => selectedFiles?.includes(f?.id))?.map(file => ({
         ...file,
         // Ensure default title is set from filename if not already set
-        title: file?.title || file?.name?.replace(/\.[^/.]+$/, '') || 'Untitled'
+        title: file?.title || file?.name?.replace(/.[^/.]+$/, '') || 'Untitled'
       }));
       
-      localStorage.setItem('selectedFiles', JSON.stringify(selectedFileData));
+      // Store File objects in global store (can't be serialized to localStorage)
+      const filesForStore = selectedFileData.map(file => ({
+        fileId: file.id,
+        fileObject: file.fileObject, // The actual File object
+        metadata: {
+          name: file.name,
+          size: file.size,
+          type: file.type,
+          title: file.title,
+          artist: file.artist,
+          album: file.album,
+          year: file.year,
+          genre: file.genre,
+          selected: file.selected,
+          status: file.status
+        }
+      }));
+      
+      storeFiles(filesForStore);
+      console.log('📦 Stored File objects in global store');
+      debugStore(); // Debug log
+      
+      // Store metadata in localStorage (without File objects)
+      const metadataOnly = selectedFileData.map(({ fileObject, ...rest }) => rest);
+      localStorage.setItem('selectedFiles', JSON.stringify(metadataOnly));
       localStorage.setItem('retagAllFiles', JSON.stringify(retagAllFiles));
+      localStorage.setItem('destinationChoice', JSON.stringify(destinationChoice));
       
       navigate('/metadata-entry');
     }
@@ -279,6 +305,7 @@ const FileSelection = () => {
   useEffect(() => {
     const savedFiles = localStorage.getItem('selectedFiles');
     const savedRetagSetting = localStorage.getItem('retagAllFiles');
+    const savedDestination = localStorage.getItem('destinationChoice');
     
     if (savedFiles) {
       try {
@@ -301,6 +328,14 @@ const FileSelection = () => {
         setRetagAllFiles(JSON.parse(savedRetagSetting));
       } catch (error) {
         console.error('Error loading retag setting:', error);
+      }
+    }
+    
+    if (savedDestination) {
+      try {
+        setDestinationChoice(JSON.parse(savedDestination));
+      } catch (error) {
+        console.error('Error loading destination choice:', error);
       }
     }
   }, []);
@@ -390,23 +425,78 @@ const FileSelection = () => {
                 canProceed={canProceed}
               />
               
-              {/* Download Location Notice */}
+              {/* Enhanced File Destination Guide with better colors */}
               <div className="card-container">
                 <div className="p-6">
                   <h3 className="text-lg font-heading font-semibold text-foreground mb-4 flex items-center">
-                    <Icon name="Download" size={20} className="mr-2 text-primary" />
-                    Download Location
+                    <Icon name="Folder" size={20} className="mr-2 text-primary" />
+                    File Destination Options
                   </h3>
-                  <div className="p-4 bg-info/10 border border-info/20 rounded-lg">
-                    <div className="flex items-start space-x-3">
-                      <Icon name="Info" size={20} className="text-info mt-0.5" />
-                      <div className="flex-1 text-sm text-info">
-                        <p className="font-medium mb-2">Processed files will be downloaded to your browser's Downloads folder</p>
-                        <p className="text-xs text-info/80">
-                          This is a web-based application. Files cannot be saved to custom locations. Check your browser's download settings to change the default Downloads folder.
-                        </p>
-                      </div>
+                  <div className="space-y-4">
+                    <div className="space-y-3">
+                      <label className="flex items-start space-x-3 cursor-pointer p-3 rounded-lg border border-border hover:bg-muted/30 transition-colors">
+                        <input
+                          type="radio"
+                          name="destinationChoice"
+                          value="default"
+                          checked={destinationChoice === 'default'}
+                          onChange={(e) => setDestinationChoice(e?.target?.value)}
+                          className="mt-1 text-primary"
+                        />
+                        <div className="flex-1">
+                          <div className="text-sm font-medium text-foreground">Default Location</div>
+                          <div className="text-xs text-muted-foreground font-mono mt-1">
+                            {fileSystemUtils?.formatPathForDisplay(fileSystemUtils?.getDefaultProcessedDirectory())}
+                          </div>
+                        </div>
+                      </label>
+                      
+                      <label className="flex items-start space-x-3 cursor-pointer p-3 rounded-lg border border-border hover:bg-muted/30 transition-colors">
+                        <input
+                          type="radio"
+                          name="destinationChoice"
+                          value="source"
+                          checked={destinationChoice === 'source'}
+                          onChange={(e) => setDestinationChoice(e?.target?.value)}
+                          className="mt-1 text-primary"
+                        />
+                        <div className="flex-1">
+                          <div className="text-sm font-medium text-foreground">Same as Source Folder</div>
+                          <div className="text-xs text-muted-foreground">
+                            Save processed files in the same directory as original files
+                          </div>
+                        </div>
+                      </label>
+                      
+                      <label className="flex items-start space-x-3 cursor-pointer p-3 rounded-lg border border-border hover:bg-muted/30 transition-colors">
+                        <input
+                          type="radio"
+                          name="destinationChoice"
+                          value="custom"
+                          checked={destinationChoice === 'custom'}
+                          onChange={(e) => setDestinationChoice(e?.target?.value)}
+                          className="mt-1 text-primary"
+                        />
+                        <div className="flex-1">
+                          <div className="text-sm font-medium text-foreground">Ask During Processing</div>
+                          <div className="text-xs text-muted-foreground">
+                            Choose destination folder when processing starts
+                          </div>
+                        </div>
+                      </label>
                     </div>
+                    
+                    <Button
+                      variant="ghost"
+                      size="sm"
+                      onClick={() => fileSystemUtils?.openFileLocation(fileSystemUtils?.getDefaultProcessedDirectory())}
+                      iconName="ExternalLink"
+                      iconPosition="left"
+                      iconSize={14}
+                      className="w-full text-primary"
+                    >
+                      Copy default path & show instructions
+                    </Button>
                   </div>
                 </div>
               </div>
