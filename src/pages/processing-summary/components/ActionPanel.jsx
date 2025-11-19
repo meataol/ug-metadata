@@ -244,18 +244,11 @@ const ActionPanel = ({
             <Icon name="FolderOpen" size={14} className="text-info mt-0.5" />
             <div className="flex-1">
               <div className="text-xs font-medium text-info mb-1">
-                📁 Default Export Location
+                📁 Export Location
               </div>
               <div className="text-xs text-muted-foreground">
-                Reports saved to: {fileSystemUtils?.formatPathForDisplay(fileSystemUtils?.getDefaultProcessedDirectory())}
+                Reports saved to: Browser Downloads folder
               </div>
-              <button
-                onClick={() => fileSystemUtils?.openFileLocation(fileSystemUtils?.getDefaultProcessedDirectory())}
-                className="text-xs text-primary hover:underline mt-1"
-              >
-                <Icon name="Copy" size={10} className="inline mr-1" />
-                Copy path & show navigation instructions
-              </button>
             </div>
           </div>
         </div>
