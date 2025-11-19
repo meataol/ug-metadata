@@ -333,10 +333,6 @@ const MetadataEntry = () => {
               <Icon name="Clock" size={16} />
               <span>Step 2 of 5</span>
             </div>
-            <div className="flex items-center space-x-2">
-              <Icon name="Settings" size={16} className="text-primary" />
-              <span className="text-primary">Click "Configure Defaults" to set default metadata values</span>
-            </div>
           </div>
         </div>
 

@@ -564,54 +564,65 @@ const FileProcessing = () => {
               </div>
             </div>
 
-            {/* ENHANCED: File Path Information with better user experience */}
+
+            {/* Output Directory - Browser Downloads */}
             <div className="bg-card border border-border rounded-lg p-4">
-              <div className="flex items-center justify-between mb-3">
+              <div className="flex items-center space-x-2 mb-2">
                 <h4 className="text-sm font-medium text-foreground">Output Directory</h4>
-                <button
-                  onClick={() => {
-                    const path = mockConfiguration?.destinationFolder;
-                    
-                    // ENHANCED: Better path handling and user feedback
-                    if (path?.includes('Same as source')) {
-                      alert('ℹ️ Source Folder Mode\n\nFiles will be processed in their original locations.\nNo copying or moving will occur - metadata is written directly to the original files.');
-                    } else if (path?.includes('selection pending') || path?.includes('not selected')) {
-                      alert('⚠️ Custom Destination Not Selected\n\nYou chose custom destination but haven\'t selected a folder yet.\n\nTo fix this:\n1. Go back to File Selection page\n2. Choose destination folder settings\n3. Use the "Browse Folder" button to select your desired location\n\nAlternatively, you can switch to "Default Location" or "Same as Source" options.');
-                    } else if (path?.includes('Custom folder') || path?.includes('invalid selection')) {
-                      alert('⚠️ Custom Destination Issue\n\nThere was a problem with your custom folder selection.\n\nTo fix this:\n1. Go back to File Selection page\n2. Re-select your destination folder using the "Browse Folder" button\n3. Make sure your browser allows folder access permissions');
-                    } else if (path?.includes('Browser-selected folder') || path?.includes('Custom')) {
-                      navigator.clipboard?.writeText(path);
-                      alert(`📋 Path Copied!\n\nDestination: ${path}\n\nNote: Browser-selected folders may show simplified names. Your files will be saved to the actual folder you selected.`);
-                    } else {
-                      // Regular path - copy to clipboard
-                      navigator.clipboard?.writeText(path);
-                      alert(`📋 Path Copied to Clipboard!\n\n${path}\n\nProcessed files will be saved to this directory.`);
-                    }
-                  }}
-                  className="text-xs text-primary hover:underline"
-                  title="Click for destination information or to copy path"
-                >
-                  <Icon name="Copy" size={12} className="inline mr-1" />
-                  Copy Path
-                </button>
               </div>
-              
-              <div className="text-xs text-muted-foreground break-all">
-                {mockConfiguration?.destinationFolder}
-              </div>
-              
+              <div className="text-xs text-muted-foreground">Browser Downloads folder</div>
               <div className="mt-2 p-2 bg-info/10 border border-info/20 rounded text-xs text-info">
                 <Icon name="Info" size={12} className="inline mr-1" />
-                {mockConfiguration?.destinationFolder?.includes('Same as source') 
-                  ? 'Files will be processed in their original directories without moving' : mockConfiguration?.destinationFolder?.includes('selection pending') || mockConfiguration?.destinationFolder?.includes('not selected')
-                    ? 'Action required: Go back to File Selection to choose destination folder' : mockConfiguration?.destinationFolder?.includes('Custom folder') && mockConfiguration?.destinationFolder?.includes('invalid')
-                      ? 'Action required: Re-select custom destination folder in File Selection' : mockConfiguration?.destinationFolder?.includes('Custom') || mockConfiguration?.destinationFolder?.includes('Browser-selected')
-                        ? 'Custom destination selected - files will be saved to your chosen folder' :'Processed files will be saved to the specified directory'
-                }
+                Processed files will be saved to the specified directory
               </div>
             </div>
 
-            {/* System Status */}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
             <div className="bg-card border border-border rounded-lg p-4">
               <div className="flex items-center justify-between mb-3">
                 <h4 className="text-sm font-medium text-foreground">System Status</h4>
