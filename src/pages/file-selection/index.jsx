@@ -196,6 +196,7 @@ const FileSelection = () => {
         localStorage.removeItem('fileProcessingQueue');
         localStorage.removeItem('processingResults');
         localStorage.removeItem('coverArtData');
+        localStorage.removeItem('coverArtImage'); // Clear cover art image
         
         // Show success feedback
         setTimeout(() => {

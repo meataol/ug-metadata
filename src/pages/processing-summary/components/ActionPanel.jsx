@@ -61,6 +61,8 @@ const ActionPanel = ({
       localStorage.removeItem('retryFiles');
       localStorage.removeItem('ugMetadataManager_metadataConfig');
       localStorage.removeItem('ugMetadataManager_metadataDraft');
+      localStorage.removeItem('coverArtImage'); // Clear cover art image
+      localStorage.removeItem('coverArtData'); // Clear cover art data
       
       if (onStartNewBatch) {
         onStartNewBatch();

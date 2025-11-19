@@ -214,6 +214,15 @@ const CoverArtManagement = () => {
   };
 
   const handleContinue = () => {
+    // Save selected cover art image to localStorage for processing page
+    if (selectedImage && selectedImage?.url) {
+      localStorage.setItem('coverArtImage', selectedImage?.url);
+      console.log('✅ Cover art image saved to localStorage');
+    } else {
+      // Clear any existing cover art if none selected
+      localStorage.removeItem('coverArtImage');
+      console.log('🗑️ No cover art selected, cleared localStorage');
+    }
     navigate('/file-processing');
   };
 

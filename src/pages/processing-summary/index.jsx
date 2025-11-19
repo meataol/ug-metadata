@@ -341,6 +341,8 @@ ${file?.error ? `Error: ${file?.error}` : ''}
     localStorage.removeItem('selectedFiles');
     localStorage.removeItem('currentProcessingSession');
     localStorage.removeItem('retryFiles');
+    localStorage.removeItem('coverArtImage'); // Clear cover art image
+    localStorage.removeItem('coverArtData'); // Clear cover art data
     navigate('/file-selection');
   };
 
