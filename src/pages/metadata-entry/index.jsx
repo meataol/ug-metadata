@@ -20,6 +20,7 @@ const MetadataEntry = () => {
     artist: '',
     album: '',
     year: new Date()?.getFullYear()?.toString(),
+    genre: '',
     comments: ''
   });
   const [processingMode, setProcessingMode] = useState('batch'); // 'batch' or 'individual'
@@ -52,6 +53,7 @@ const MetadataEntry = () => {
             artist: file?.artist || defaults?.artist || '',
             album: file?.album || defaults?.album || '',
             year: file?.year || defaults?.year || new Date()?.getFullYear()?.toString(),
+            genre: file?.genre || defaults?.genre || '',
             comments: defaults?.comments || ''
           };
         });
@@ -63,6 +65,7 @@ const MetadataEntry = () => {
           artist: defaults?.artist || '',
           album: defaults?.album || '',
           year: defaults?.year || new Date()?.getFullYear()?.toString(),
+          genre: defaults?.genre || '',
           comments: defaults?.comments || ''
         });
         
@@ -85,6 +88,7 @@ const MetadataEntry = () => {
       artist: defaultsConfig?.artist || '',
       album: defaultsConfig?.album || '',
       year: defaultsConfig?.year || new Date()?.getFullYear()?.toString(),
+      genre: defaultsConfig?.genre || '',
       comments: defaultsConfig?.comments || ''
     }));
     

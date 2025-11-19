@@ -29,6 +29,7 @@ const MetadataForm = ({
     artist: 'UG Production',
     album: '',
     year: new Date()?.getFullYear()?.toString(),
+    genre: '',
     comments: '',
     ...metadata
   });
@@ -49,6 +50,7 @@ const MetadataForm = ({
       artist: metadata?.artist && metadata?.artist !== 'Not set' ? metadata?.artist : 'UG Production',
       album: metadata?.album && metadata?.album !== 'Not set' ? metadata?.album : '',
       year: metadata?.year && metadata?.year !== 'Not set' ? metadata?.year : new Date()?.getFullYear()?.toString(),
+      genre: metadata?.genre || '',
       comments: metadata?.comments || ''
     };
 
@@ -142,6 +144,7 @@ const MetadataForm = ({
       artist: 'UG Production',
       album: '',
       year: new Date()?.getFullYear()?.toString(),
+      genre: '',
       comments: ''
     };
     
@@ -165,6 +168,7 @@ const MetadataForm = ({
       artist: 'UG Production',
       album: 'UG Collection 2024',
       year: '2024',
+      genre: 'Electronic',
       comments: 'Processed with UG Metadata Manager'
     };
     
@@ -355,6 +359,23 @@ const MetadataForm = ({
               <div className="form-error">{validationErrors?.year}</div>
             )}
             <div className="form-description">Year of creation or release (defaults to current year)</div>
+          </div>
+
+          {/* Genre Field */}
+          <div>
+            <label className="form-label">Genre</label>
+            <input
+              type="text"
+              placeholder="Music or content genre (optional)"
+              value={formData?.genre || ''}
+              onChange={(e) => handleInputChange('genre', e?.target?.value)}
+              className={`form-input ${validationErrors?.genre ? 'border-error focus:ring-error' : ''}`}
+              maxLength={50}
+            />
+            {validationErrors?.genre && (
+              <div className="form-error">{validationErrors?.genre}</div>
+            )}
+            <div className="form-description">Genre or category (e.g., Rock, Pop, Holiday, etc.)</div>
           </div>
 
           {/* Comments Field */}
