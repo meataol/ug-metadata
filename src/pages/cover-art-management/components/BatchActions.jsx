@@ -49,31 +49,7 @@ const BatchActions = ({
       handler: onApplyToAll,
       requiresConfirmation: true,
       confirmTitle: 'Apply Cover Art to All Files?',
-      confirmMessage: `This will apply the selected cover art to ${activeFiles?.length} files (${audioFiles?.length} audio, ${videoFiles?.length} video). This action cannot be undone.`
-    },
-    {
-      id: 'apply-audio',
-      label: 'Apply to Audio Only',
-      description: `Apply to ${audioFiles?.length} audio files`,
-      icon: 'Music',
-      variant: 'outline',
-      disabled: !selectedImage || audioFiles?.length === 0 || isProcessing,
-      handler: () => onApplyToSelected(audioFiles?.map(f => f?.id)),
-      requiresConfirmation: true,
-      confirmTitle: 'Apply Cover Art to Audio Files?',
-      confirmMessage: `This will apply the selected cover art to ${audioFiles?.length} audio files. Video files will be skipped.`
-    },
-    {
-      id: 'apply-video',
-      label: 'Apply to Video Only',
-      description: `Apply to ${videoFiles?.length} video files`,
-      icon: 'Video',
-      variant: 'outline',
-      disabled: !selectedImage || videoFiles?.length === 0 || isProcessing,
-      handler: () => onApplyToSelected(videoFiles?.map(f => f?.id)),
-      requiresConfirmation: true,
-      confirmTitle: 'Apply Cover Art to Video Files?',
-      confirmMessage: `This will apply the selected cover art to ${videoFiles?.length} video files as thumbnails. Audio files will be skipped.`
+      confirmMessage: `This will apply the selected cover art to ${activeFiles?.length} files. This action cannot be undone.`
     }
   ];
 

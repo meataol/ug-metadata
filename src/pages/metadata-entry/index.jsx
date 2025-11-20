@@ -306,10 +306,6 @@ const MetadataEntry = () => {
             
             {/* ENHANCED: More prominent Configure Defaults Button */}
             <div className="flex items-center space-x-3">
-              <div className="hidden sm:block text-right">
-                <div className="text-xs text-muted-foreground">Need to set defaults?</div>
-                <div className="text-xs text-primary">Click the settings button →</div>
-              </div>
               <Button
                 variant="default"
                 onClick={() => setShowDefaultsConfig(true)}
