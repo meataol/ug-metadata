@@ -173,6 +173,11 @@ const CoverArtManagement = () => {
       thumbnail: null
     }));
     setFiles(updatedFiles);
+    
+    // Also clear the selected image and localStorage
+    setSelectedImage(null);
+    localStorage.removeItem('coverArtImage');
+    console.log('🗑️ Cleared all cover art including selected image and localStorage');
   };
 
   const handlePreview = () => {
