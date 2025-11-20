@@ -28,6 +28,14 @@ const CoverArtManagement = () => {
 
   // Load actual files from localStorage instead of hardcoded mock data
   useEffect(() => {
+    // Clear any old cover art image from localStorage when component mounts
+    // This ensures we start fresh for each batch
+    const oldCoverArt = localStorage.getItem('coverArtImage');
+    if (oldCoverArt) {
+      console.log('🗑️ Clearing old cover art from previous batch');
+      localStorage.removeItem('coverArtImage');
+    }
+    
     const loadFilesFromStorage = () => {
       // Try to get files from multiple localStorage sources
       const savedFiles = localStorage.getItem('selectedFiles');
