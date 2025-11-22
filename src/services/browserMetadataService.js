@@ -59,23 +59,60 @@ export async function readMetadata(file) {
 }
 
 /**
- * Write metadata to an MP3 file
- * @param {File} file - The original MP3 file
+ * Manually strip ALL ID3v2 tags and extract pure MP3 audio data
+ * This ensures old cover art and metadata are completely removed
+ */
+function stripAllID3Tags(arrayBuffer) {
+  const data = new Uint8Array(arrayBuffer);
+  let offset = 0;
+  
+  // Keep stripping ID3v2 tags until we find the audio data
+  while (offset < data.length - 10) {
+    // Check for ID3v2 header ("ID3")
+    if (data[offset] === 0x49 && data[offset + 1] === 0x44 && data[offset + 2] === 0x33) {
+      // ID3v2 tag found
+      const version = data[offset + 3];
+      if (version < 2 || version > 4) break; // Invalid version
+      
+      // Calculate tag size (synchsafe integer)
+      const size = ((data[offset + 6] & 0x7F) << 21) |
+                   ((data[offset + 7] & 0x7F) << 14) |
+                   ((data[offset + 8] & 0x7F) << 7) |
+                   (data[offset + 9] & 0x7F);
+      
+      // Skip the tag (header + size)
+      offset += 10 + size;
+      console.log(`🗑️ Stripped ID3v2.${version} tag (${size} bytes)`);
+    } else {
+      // No more ID3 tags, this is the audio data
+      break;
+    }
+  }
+  
+  // Return pure audio data
+  const audioData = data.subarray(offset);
+  console.log(`✅ Extracted pure audio data: ${audioData.length} bytes (stripped ${offset} bytes of ID3 tags)`);
+  return audioData.buffer;
+}
+
+/**
+ * Write metadata to MP3 file using browser-id3-writer
+ * @param {File} file - The MP3 file to process
  * @param {Object} metadata - Metadata to write
- * @param {Object} options - Additional options (coverArt, etc.)
- * @returns {Promise<Blob>} New file blob with updated metadata
+ * @param {Object} options - Additional options (e.g., coverArt)
+ * @returns {Promise<Blob>} - The processed MP3 file as a Blob
  */
 export async function writeMP3Metadata(file, metadata, options = {}) {
   try {
     // Read the original file as ArrayBuffer
     const arrayBuffer = await file.arrayBuffer();
     
-    // Create ID3 writer
-    const writer = new ID3Writer(arrayBuffer);
+    // Manually strip ALL ID3 tags to get pure audio data
+    const pureAudioData = stripAllID3Tags(arrayBuffer);
     
-    // Explicitly remove existing ID3 tags to ensure old cover art is removed
-    writer.removeTag();
-    console.log('🗑️ Removed existing ID3 tags from file');
+    // Create ID3 writer with PURE audio data (no old tags)
+    const writer = new ID3Writer(pureAudioData);
+    console.log('✅ Created ID3Writer with pure audio data (all old tags removed)');
     
     // Set text frames
     if (metadata.title) {
