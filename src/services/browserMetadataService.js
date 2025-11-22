@@ -89,10 +89,18 @@ function stripAllID3Tags(arrayBuffer) {
     }
   }
   
-  // Return pure audio data
+  // Return pure audio data as a NEW ArrayBuffer (not the original buffer)
   const audioData = data.subarray(offset);
   console.log(`✅ Extracted pure audio data: ${audioData.length} bytes (stripped ${offset} bytes of ID3 tags)`);
-  return audioData.buffer;
+  
+  // Create a new ArrayBuffer with only the stripped audio data
+  // (audioData.buffer would return the ORIGINAL buffer, not the subarray!)
+  const newBuffer = new ArrayBuffer(audioData.length);
+  const newData = new Uint8Array(newBuffer);
+  newData.set(audioData);
+  
+  console.log(`✅ Created new buffer with pure audio: ${newBuffer.byteLength} bytes`);
+  return newBuffer;
 }
 
 /**
