@@ -24,13 +24,34 @@ const MetadataForm = ({
     return '';
   };
 
+  // Load saved defaults from localStorage for initial state
+  const getInitialDefaults = () => {
+    try {
+      const saved = localStorage.getItem('ugMetadataManager_defaultConfig');
+      if (saved) {
+        return JSON.parse(saved);
+      }
+    } catch (error) {
+      console.error('Error loading defaults:', error);
+    }
+    return {
+      artist: '',
+      album: '',
+      year: new Date()?.getFullYear()?.toString(),
+      genre: '',
+      comments: 'Processed by UG Metadata Manager'
+    };
+  };
+  
+  const initialDefaults = getInitialDefaults();
+  
   const [formData, setFormData] = useState({
     title: getDefaultTitle(),
-    artist: 'UG Production',
-    album: '',
-    year: new Date()?.getFullYear()?.toString(),
-    genre: '',
-    comments: '',
+    artist: initialDefaults?.artist || '',
+    album: initialDefaults?.album || '',
+    year: initialDefaults?.year || new Date()?.getFullYear()?.toString(),
+    genre: initialDefaults?.genre || '',
+    comments: initialDefaults?.comments || '',
     ...metadata
   });
 
@@ -45,13 +66,14 @@ const MetadataForm = ({
     });
 
     const defaultTitle = getDefaultTitle();
+    const currentDefaults = getInitialDefaults();
     const syncedData = {
       title: metadata?.title && metadata?.title !== 'Not set' ? metadata?.title : defaultTitle,
-      artist: metadata?.artist && metadata?.artist !== 'Not set' ? metadata?.artist : 'UG Production',
-      album: metadata?.album && metadata?.album !== 'Not set' ? metadata?.album : '',
-      year: metadata?.year && metadata?.year !== 'Not set' ? metadata?.year : new Date()?.getFullYear()?.toString(),
-      genre: metadata?.genre || '',
-      comments: metadata?.comments || ''
+      artist: metadata?.artist && metadata?.artist !== 'Not set' ? metadata?.artist : (currentDefaults?.artist || ''),
+      album: metadata?.album && metadata?.album !== 'Not set' ? metadata?.album : (currentDefaults?.album || ''),
+      year: metadata?.year && metadata?.year !== 'Not set' ? metadata?.year : (currentDefaults?.year || new Date()?.getFullYear()?.toString()),
+      genre: metadata?.genre || (currentDefaults?.genre || ''),
+      comments: metadata?.comments || (currentDefaults?.comments || '')
     };
 
     console.log('📝 MetadataForm: Setting form data', syncedData);
@@ -139,13 +161,32 @@ const MetadataForm = ({
   };
 
   const handleResetToDefaults = () => {
+    // Load saved defaults from localStorage
+    const savedDefaults = (() => {
+      try {
+        const saved = localStorage.getItem('ugMetadataManager_defaultConfig');
+        if (saved) {
+          return JSON.parse(saved);
+        }
+      } catch (error) {
+        console.error('Error loading defaults:', error);
+      }
+      return {
+        artist: '',
+        album: '',
+        year: new Date()?.getFullYear()?.toString(),
+        genre: '',
+        comments: 'Processed by UG Metadata Manager'
+      };
+    })();
+    
     const defaultData = {
       title: getDefaultTitle(),
-      artist: 'UG Production',
-      album: '',
-      year: new Date()?.getFullYear()?.toString(),
-      genre: '',
-      comments: ''
+      artist: savedDefaults?.artist || '',
+      album: savedDefaults?.album || '',
+      year: savedDefaults?.year || new Date()?.getFullYear()?.toString(),
+      genre: savedDefaults?.genre || '',
+      comments: savedDefaults?.comments || ''
     };
     
     console.log('🔄 Resetting to defaults:', defaultData);
@@ -161,15 +202,34 @@ const MetadataForm = ({
   };
 
   const handleAutoFillSample = () => {
+    // Load saved defaults from localStorage
+    const savedDefaults = (() => {
+      try {
+        const saved = localStorage.getItem('ugMetadataManager_defaultConfig');
+        if (saved) {
+          return JSON.parse(saved);
+        }
+      } catch (error) {
+        console.error('Error loading defaults:', error);
+      }
+      return {
+        artist: '',
+        album: '',
+        year: new Date()?.getFullYear()?.toString(),
+        genre: '',
+        comments: 'Processed by UG Metadata Manager'
+      };
+    })();
+    
     const sampleData = {
       title: isIndividualMode && currentFile ? 
         `${currentFile?.name?.split('.')?.slice(0, -1)?.join('.')} - UG Version` : 
         'Sample Track Title',
-      artist: 'UG Production',
-      album: 'UG Collection 2024',
-      year: '2024',
-      genre: 'Electronic',
-      comments: 'Processed with UG Metadata Manager'
+      artist: savedDefaults?.artist || 'UG Production',
+      album: savedDefaults?.album || 'UG Collection 2024',
+      year: savedDefaults?.year || '2024',
+      genre: savedDefaults?.genre || 'Electronic',
+      comments: savedDefaults?.comments || 'Processed with UG Metadata Manager'
     };
     
     console.log('🎭 Auto-filling sample data:', sampleData);

@@ -92,6 +92,22 @@ const MetadataEntry = () => {
       comments: defaultsConfig?.comments || ''
     }));
     
+    // Also update individual metadata for all files to use new defaults
+    setIndividualMetadata(prev => {
+      const updated = {};
+      Object.keys(prev).forEach(fileId => {
+        updated[fileId] = {
+          ...prev[fileId],
+          artist: prev[fileId]?.artist || defaultsConfig?.artist || '',
+          album: prev[fileId]?.album || defaultsConfig?.album || '',
+          year: prev[fileId]?.year || defaultsConfig?.year || new Date()?.getFullYear()?.toString(),
+          genre: prev[fileId]?.genre || defaultsConfig?.genre || '',
+          comments: defaultsConfig?.comments || ''
+        };
+      });
+      return updated;
+    });
+    
     setShowDefaultsConfig(false);
     alert('✅ Default metadata settings saved!\n\nThese settings will be applied to new files automatically.');
   };
