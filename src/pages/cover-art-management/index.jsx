@@ -235,6 +235,9 @@ const CoverArtManagement = () => {
     if (selectedImage && selectedImage?.url) {
       localStorage.setItem('coverArtImage', selectedImage?.url);
       console.log('✅ Cover art image saved to localStorage');
+      console.log('📸 Cover art URL type:', selectedImage?.url?.substring(0, 50));
+      console.log('📸 Cover art size:', selectedImage?.size, 'bytes');
+      console.log('📸 Cover art name:', selectedImage?.name);
     } else {
       // Clear any existing cover art if none selected
       localStorage.removeItem('coverArtImage');

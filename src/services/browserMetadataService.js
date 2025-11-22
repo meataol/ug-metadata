@@ -107,14 +107,23 @@ export async function writeMP3Metadata(file, metadata, options = {}) {
     
     // Set cover art if provided
     if (options.coverArt) {
+      console.log('🇮🇩 writeMP3Metadata: Cover art provided, processing...');
       const coverData = await getCoverArtData(options.coverArt);
       if (coverData) {
+        console.log('✅ Cover data obtained, setting APIC frame...');
+        console.log('🇮🇩 Cover data size:', coverData.data.length, 'bytes');
+        console.log('🇮🇩 Cover type:', coverData.type);
         writer.setFrame('APIC', {
           type: 3, // Front cover
           data: coverData.data,
           description: coverData.description || 'Cover'
         });
+        console.log('✅ APIC frame set successfully!');
+      } else {
+        console.warn('⚠️ Cover data is null, APIC frame not set');
       }
+    } else {
+      console.log('🗑️ No cover art provided, APIC frame will not be set');
     }
     
     // Add padding for future edits
@@ -140,13 +149,18 @@ export async function writeMP3Metadata(file, metadata, options = {}) {
  */
 async function getCoverArtData(coverArt) {
   try {
+    console.log('🇮🇩 getCoverArtData: Processing cover art...');
+    console.log('🇮🇩 Cover art type:', typeof coverArt);
+    
     // If it's already an object with data property
     if (coverArt.data && coverArt.data instanceof Uint8Array) {
+      console.log('✅ Cover art is already Uint8Array object');
       return coverArt;
     }
     
     // If it's a File or Blob
     if (coverArt instanceof File || coverArt instanceof Blob) {
+      console.log('✅ Cover art is File or Blob');
       const arrayBuffer = await coverArt.arrayBuffer();
       return {
         data: new Uint8Array(arrayBuffer),
@@ -157,12 +171,15 @@ async function getCoverArtData(coverArt) {
     
     // If it's a base64 string
     if (typeof coverArt === 'string' && coverArt.startsWith('data:')) {
+      console.log('✅ Cover art is Data URL (base64)');
+      console.log('🇮🇩 Data URL prefix:', coverArt.substring(0, 50));
       const base64Data = coverArt.split(',')[1];
       const binaryString = atob(base64Data);
       const bytes = new Uint8Array(binaryString.length);
       for (let i = 0; i < binaryString.length; i++) {
         bytes[i] = binaryString.charCodeAt(i);
       }
+      console.log('✅ Converted to Uint8Array, size:', bytes.length, 'bytes');
       return {
         data: bytes,
         description: 'Cover',

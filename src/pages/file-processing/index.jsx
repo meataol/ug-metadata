@@ -198,6 +198,12 @@ const FileProcessing = () => {
     try {
       // Get cover art from localStorage if available
       const coverArtBase64 = localStorage.getItem('coverArtImage');
+      console.log('📋 Processing: Retrieved cover art from localStorage');
+      console.log('📋 Cover art exists:', !!coverArtBase64);
+      if (coverArtBase64) {
+        console.log('📋 Cover art URL type:', coverArtBase64?.substring(0, 50));
+        console.log('📋 Cover art length:', coverArtBase64?.length, 'characters');
+      }
       
       // Prepare metadata from configured metadata
       const metadata = {
