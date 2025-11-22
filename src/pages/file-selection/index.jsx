@@ -57,8 +57,9 @@ const FileSelection = () => {
           hasUGTag: hasUGTag,
           status: 'ready',
           selected: true,
-          extractionMethod: 'id3-tags',
-          coverArt: actualMetadata?.coverArt
+          extractionMethod: 'id3-tags'
+          // Note: coverArt is NOT included here to avoid localStorage serialization issues
+          // Cover art will be read again when needed for processing
         };
         
         processedFiles?.push(fileData);
