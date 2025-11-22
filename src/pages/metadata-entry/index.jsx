@@ -332,39 +332,6 @@ const MetadataEntry = () => {
           </div>
         </div>
 
-        {/* ENHANCED: Default Values Quick Access Banner */}
-        <div className="mb-6 p-4 bg-primary/5 border border-primary/20 rounded-lg">
-          <div className="flex items-center justify-between">
-            <div className="flex items-center space-x-3">
-              <Icon name="Settings" size={20} className="text-primary" />
-              <div>
-                <h4 className="text-sm font-medium text-primary">Default Metadata Values</h4>
-                <p className="text-xs text-muted-foreground">
-                  Set default artist, album, year, and other metadata that will be applied to new files automatically
-                </p>
-              </div>
-            </div>
-            
-            <div className="flex items-center space-x-2">
-              <div className="text-right">
-                <div className="text-xs text-muted-foreground">
-                  Current defaults: {defaultsConfig?.artist || 'Not set'}, {defaultsConfig?.album || 'Not set'}
-                </div>
-              </div>
-              <Button
-                variant="outline"
-                size="sm"
-                onClick={() => setShowDefaultsConfig(true)}
-                iconName="Settings"
-                iconPosition="left"
-                iconSize={14}
-              >
-                Modify Defaults
-              </Button>
-            </div>
-          </div>
-        </div>
-
         {/* Title Configuration Section */}
         <div className="mb-8 bg-card border border-border rounded-lg p-6">
           <h3 className="text-lg font-heading font-semibold text-foreground mb-4">

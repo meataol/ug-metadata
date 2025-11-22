@@ -9,7 +9,7 @@ import ImportSummary from './components/ImportSummary';
 import { fileSystemUtils } from '../../utils/fileSystemUtils';
 import Icon from '../../components/AppIcon';
 import Button from '../../components/ui/Button';
-import { extractMetadataWithAI } from '../../services/metadataService';
+import { readMetadata } from '../../services/browserMetadataService';
 import { storeFiles, clearAllFiles, debugStore } from '../../utils/fileStore';
 
 const FileSelection = () => {
@@ -35,8 +35,11 @@ const FileSelection = () => {
       const file = files?.[i];
       
       try {
-        // Extract metadata using OpenAI
-        const aiMetadata = await extractMetadataWithAI(file?.name, file?.size, file?.type);
+        // Read actual MP3 metadata from file tags
+        const actualMetadata = await readMetadata(file);
+        
+        // Check if file has UG PRODUCTION tag
+        const hasUGTag = actualMetadata?.artist?.toUpperCase()?.includes('UG PRODUCTION');
         
         const fileData = {
           id: `file_${Date.now()}_${i}`,
@@ -45,26 +48,25 @@ const FileSelection = () => {
           type: file?.type,
           lastModified: new Date(file.lastModified)?.toLocaleDateString(),
           fileObject: file, // Store the actual File object for processing
-          // Use AI-extracted metadata instead of hardcoded values
-          title: aiMetadata?.title,
-          artist: aiMetadata?.artist,
-          album: aiMetadata?.album,
-          year: aiMetadata?.year,
-          genre: aiMetadata?.genre,
-          hasUGTag: false, // Will be determined by actual file analysis
+          // Use actual metadata from file tags
+          title: actualMetadata?.title || file?.name?.replace(/\.[^/.]+$/, ''),
+          artist: actualMetadata?.artist || '',
+          album: actualMetadata?.album || '',
+          year: actualMetadata?.year?.toString() || '',
+          genre: actualMetadata?.genre || '',
+          hasUGTag: hasUGTag,
           status: 'ready',
           selected: true,
-          extractionMethod: aiMetadata?.extractedBy,
-          confidence: aiMetadata?.confidence,
-          extractedAt: aiMetadata?.timestamp
+          extractionMethod: 'id3-tags',
+          coverArt: actualMetadata?.coverArt
         };
         
         processedFiles?.push(fileData);
-        console.log(`✅ Processed: ${file?.name} - ${aiMetadata?.title} by ${aiMetadata?.artist}`);
+        console.log(`✅ Processed: ${file?.name} - Title: ${actualMetadata?.title}, Artist: ${actualMetadata?.artist}, Album: ${actualMetadata?.album}`);
       } catch (error) {
         console.error(`❌ Error processing ${file?.name}:`, error);
         
-        // Fallback processing without AI
+        // Fallback: use filename as title
         const fileData = {
           id: `file_${Date.now()}_${i}`,
           name: file?.name,
@@ -73,10 +75,10 @@ const FileSelection = () => {
           lastModified: new Date(file.lastModified)?.toLocaleDateString(),
           fileObject: file, // Store the actual File object for processing
           title: file?.name?.replace(/\.[^/.]+$/, ''),
-          artist: 'Unknown Artist',
-          album: 'Unknown Album',
-          year: new Date()?.getFullYear()?.toString(),
-          genre: 'Unknown',
+          artist: '',
+          album: '',
+          year: '',
+          genre: '',
           hasUGTag: false,
           status: 'error',
           selected: true,

@@ -270,11 +270,12 @@ const FileProcessing = () => {
       
       // Save only the summary results (not the full file blobs)
       const resultsSummary = results.map(r => ({
-        filename: r.filename,
+        originalName: r.filename,
+        newName: r.newFilename || r.filename,
         success: r.success,
+        status: r.success ? 'success' : 'failed',
         error: r.error,
-        newFilename: r.newFilename,
-        timestamp: new Date().toISOString()
+        processedAt: new Date().toISOString()
         // Don't save modifiedBlob - it's too large for localStorage
       }));
       

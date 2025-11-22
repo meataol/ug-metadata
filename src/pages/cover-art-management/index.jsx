@@ -36,6 +36,10 @@ const CoverArtManagement = () => {
       localStorage.removeItem('coverArtImage');
     }
     
+    // Also clear the selectedImage state to ensure we start fresh
+    setSelectedImage(null);
+    console.log('🗑️ Cleared selectedImage state on mount');
+    
     const loadFilesFromStorage = () => {
       // Try to get files from multiple localStorage sources
       const savedFiles = localStorage.getItem('selectedFiles');
