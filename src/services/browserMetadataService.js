@@ -176,6 +176,14 @@ export async function writeMP3Metadata(file, metadata, options = {}) {
     // Create a Blob from the ArrayBuffer
     const blob = new Blob([taggedBuffer], { type: 'audio/mpeg' });
     
+    // Verification logging
+    console.log('📊 File size comparison:');
+    console.log('  Original file size:', arrayBuffer.byteLength, 'bytes');
+    console.log('  Pure audio data size:', pureAudioData.byteLength, 'bytes');
+    console.log('  Tagged buffer size:', taggedBuffer.byteLength, 'bytes');
+    console.log('  Final blob size:', blob.size, 'bytes');
+    console.log('  Size difference:', blob.size - arrayBuffer.byteLength, 'bytes');
+    
     return blob;
   } catch (error) {
     console.error('Error writing metadata:', error);
@@ -253,14 +261,24 @@ async function getCoverArtData(coverArt) {
  * @param {String} filename - The filename for the download
  */
 export function downloadFile(blob, filename) {
+  console.log('📥 Downloading file:', filename);
+  console.log('  Blob size:', blob.size, 'bytes');
+  console.log('  Blob type:', blob.type);
+  
   const url = URL.createObjectURL(blob);
   const a = document.createElement('a');
   a.href = url;
   a.download = filename;
+  
+  // Add timestamp to force new download (prevent caching)
+  a.setAttribute('data-timestamp', Date.now());
+  
   document.body.appendChild(a);
   a.click();
   document.body.removeChild(a);
   URL.revokeObjectURL(url);
+  
+  console.log('✅ File download triggered');
 }
 
 /**
