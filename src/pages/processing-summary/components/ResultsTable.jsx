@@ -176,9 +176,6 @@ const ResultsTable = ({ files = [] }) => {
               <th className="text-left p-4 text-sm font-medium text-muted-foreground">
                 Location
               </th>
-              <th className="text-center p-4 text-sm font-medium text-muted-foreground">
-                Actions
-              </th>
             </tr>
           </thead>
           <tbody>
@@ -226,41 +223,11 @@ const ResultsTable = ({ files = [] }) => {
                         {displayPath}
                       </button>
                     </td>
-                    <td className="p-4">
-                      <div className="flex items-center justify-center space-x-2">
-                        <Button
-                          variant="ghost"
-                          size="sm"
-                          onClick={() => showFileInExplorer(file?.location)}
-                          iconName="ExternalLink"
-                          iconSize={16}
-                          title="Show file location with instructions"
-                        />
-                        <Button
-                          variant="ghost"
-                          size="sm"
-                          onClick={() => openFileLocation(file?.location)}
-                          iconName="FolderOpen"
-                          iconSize={16}
-                          title="Copy folder path to clipboard"
-                        />
-                        {file?.error && (
-                          <Button
-                            variant="ghost"
-                            size="sm"
-                            onClick={() => toggleRowExpansion(file?.id)}
-                            iconName={isExpanded ? "ChevronUp" : "ChevronDown"}
-                            iconSize={16}
-                            title="Show error details"
-                          />
-                        )}
-                      </div>
-                    </td>
                   </tr>
                   {/* Error Details Row */}
                   {isExpanded && file?.error && (
                     <tr className="bg-error/5">
-                      <td colSpan="6" className="p-4">
+                      <td colSpan="5" className="p-4">
                         <div className="flex items-start space-x-3">
                           <Icon name="AlertCircle" size={16} className="text-error mt-0.5" />
                           <div className="flex-1">

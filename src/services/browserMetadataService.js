@@ -73,6 +73,10 @@ export async function writeMP3Metadata(file, metadata, options = {}) {
     // Create ID3 writer
     const writer = new ID3Writer(arrayBuffer);
     
+    // Explicitly remove existing ID3 tags to ensure old cover art is removed
+    writer.removeTag();
+    console.log('🗑️ Removed existing ID3 tags from file');
+    
     // Set text frames
     if (metadata.title) {
       writer.setFrame('TIT2', metadata.title);
